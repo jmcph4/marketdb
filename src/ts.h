@@ -15,4 +15,6 @@ double stddev(int* series, int n);
 
 // time series functions
 double SMA(int* series, int n, int m);
+
+// void plot(int* series, int n)
 #endif
