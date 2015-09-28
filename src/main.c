@@ -28,10 +28,13 @@ int main(int argc, char** argv)
   int* volume;
   char name[128];
   char ticker[128];
+  int id = 0;
   
   /***************************************************************************/
   
-  res = load_ts(get_id_from_ticker(argv[1]), &timestamp, &open, &high, &low, 
+  id = get_id_from_ticker(argv[1]);
+  
+  res = load_ts(id, &timestamp, &open, &high, &low, 
                 &close, &volume);
   
   if(res == EXIT_FAILURE)
@@ -39,8 +42,8 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
   
-  get_name_from_id(5, name);
-  get_ticker_from_id(5, ticker);
+  get_name_from_id(id, name);
+  get_ticker_from_id(id, ticker);
   
   printf("--- QUOTE FOR %s ---\n", ticker);
   printf("Name:         %s\n", name);
