@@ -19,6 +19,7 @@ int main(int argc, char** argv)
   }
   
   int res = 0;
+  int num_rows = 0;
   
   long long* timestamp;
   int* open;
@@ -29,10 +30,13 @@ int main(int argc, char** argv)
   char name[128];
   char ticker[128];
   int id = 0;
+  char* slug = malloc(64 * sizeof(char));
   
   /***************************************************************************/
   
   id = get_id_from_ticker(argv[1]);
+  get_slug_from_id(id, slug);
+  num_rows = get_row_count_from_slug(slug);
   
   res = load_ts(id, &timestamp, &open, &high, &low, 
                 &close, &volume);
@@ -48,25 +52,26 @@ int main(int argc, char** argv)
   printf("--- QUOTE FOR %s ---\n", ticker);
   printf("Name:         %s\n", name);
   printf("Latest Price: $%.2f\n", (float)(close[0]/100));
-  printf("Mean Price:   $%.2f\n", mean(close, TOTAL)/100);
-  printf("Min. Price:   $%.2f\n", (float)min(close, TOTAL)/100);
-  printf("Max. Price:   $%.2f\n", (float)max(close, TOTAL)/100);
-  printf("Std. Dev.:    $%.2f\n", stddev(close, TOTAL)/100);
+  printf("Mean Price:   $%.2f\n", get_mean(close, num_rows)/100);
+  printf("Min. Price:   $%.2f\n", (float)get_min(close, num_rows)/100);
+  printf("Max. Price:   $%.2f\n", (float)get_max(close, num_rows)/100);
+  printf("Std. Dev.:    $%.2f\n", get_stddev(close, num_rows)/100);
   printf("\n\n\n");
   
-  if(close[0] < mean(close, TOTAL/100))
+  if(close[0] < get_mean(close, num_rows))
   {
     printf("Security is currently trading $%.2f below historical averages.\n", 
-           (mean(close, TOTAL)/100) - ((float)(close[0]/100)));
+           (get_mean(close, num_rows)/100) - ((float)(close[0]/100)));
   }
-  else if(close[0] >= mean(close, TOTAL/100))
+  else if(close[0] >= get_mean(close, num_rows))
   {
     printf("Security is currently trading $%.2f above historical averages.\n", 
-           ((float)(close[0]/100)) - (mean(close, TOTAL)/100));
+           (float)((close[0] - get_mean(close, num_rows))/100));
   }
   
   /***************************************************************************/
   
+  free(slug);
   free(timestamp);
   free(open);
   free(high);

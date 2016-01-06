@@ -5,13 +5,13 @@
 #include <stdlib.h>
 
 // descriptive statistics and measures of central tendency
-double mean(int* series, int n);
-int median(int* series, int n);
-int mode(int* series, int n);
-int min(int* series, int n);
-int max(int* series, int n);
-int range(int* series, int n);
-double stddev(int* series, int n);
+double get_mean(int* series, int n);
+int get_median(int* series, int n);
+int get_mode(int* series, int n);
+int get_min(int* series, int n);
+int get_max(int* series, int n);
+int get_range(int* series, int n);
+double get_stddev(int* series, int n);
 
 // time series functions
 double SMA(int* series, int n, int m);

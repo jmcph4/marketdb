@@ -370,3 +370,61 @@ int load_ts(int id, long long** timestamp, int** open, int** high, int** low, in
   
   return EXIT_SUCCESS;
 }
+
+int get_row_count_from_slug(char* slug)
+{
+  int i = 0;
+  int j = 0;
+  int records = 0;
+  int count = 0;
+  
+  // db variables
+  PGconn* db;
+  PGresult* res;
+  
+  // strings
+  char lookup_query[128];
+  char* count_string;
+  
+  // connect to db
+  db = PQconnectdb("dbname=equities user=jmcph4");
+  
+  if(PQstatus(db) == CONNECTION_BAD)
+  {
+    fprintf(stderr, "[ERROR] Failed to connect to the PostgreSQL database.\n");
+    
+    return EXIT_FAILURE;
+  }
+  
+  sprintf(lookup_query, "SELECT COUNT(*) FROM %s;", slug);
+  
+  res = PQexec(db, lookup_query);
+  
+  if(PQresultStatus(res) != PGRES_TUPLES_OK)
+  {
+    fprintf(stderr, "[ERROR] Failed to query PostgreSQL database.\n");
+    
+    return EXIT_FAILURE;
+  }
+  
+  records = PQntuples(res);
+  
+  for(i=0;i<records;i++)
+  { 
+    for(j=0;j<2;j++)
+    {
+      if(j == 0)
+      {
+        count_string = malloc(PQgetlength(res, i, j) * sizeof(char));
+        memcpy((void*)count_string, (void*)PQgetvalue(res, i, j), PQgetlength(res, i, j));
+        count_string[PQgetlength(res, i, j)] = '\0';
+      }
+    }
+  }
+  
+  count = atoi(count_string);
+  
+  free(count_string);
+  
+  return count;
+}
